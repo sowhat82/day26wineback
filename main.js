@@ -144,3 +144,7 @@ app.get('/wineDetails/:wineID', async (req, resp) => {
     }
 
 })
+
+app.use(
+    express.static(__dirname + '/day26winefront')
+)
