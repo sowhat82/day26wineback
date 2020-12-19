@@ -2,17 +2,18 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient;
 const morgan = require ('morgan')
-const url = 'mongodb://localhost:27017' /* connection string */
 const mysql = require('mysql2/promise')
 const secureEnv = require('secure-env')
 global.env = secureEnv({secret:'mySecretPassword'})
 const bodyParser = require('body-parser');
 
+const url = 'mongodb://localhost:27017' /* connection string */
 // for cloud storage using env variables
-// const mongourl = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0.ow18z.mongodb.net/<dbname>?retryWrites=true&w=majority`
+const mongourl = `mongodb+srv://${global.env.MONGO_USER}:${global.env.MONGO_PASSWORD}@cluster0.ow18z.mongodb.net/winemag?retryWrites=true&w=majority`
 
 // create a client pool
-const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true });    
+//const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true });    
+const client = new MongoClient(mongourl, {useNewUrlParser: true, useUnifiedTopology: true });    
 
 // configure port
 const PORT = parseInt(process.argv[2]) || parseInt(process.env.PORT) || 3000
@@ -40,7 +41,7 @@ const startApp = async (app, pool) => {
             })
         })
         .catch(e => {
-                console.error('canot connect to mongodb: ', e)
+                console.error('cannot connect to mongodb: ', e)
         })
     } catch(e) {
 		console.error('Cannot ping database', e)
@@ -58,18 +59,7 @@ const pool = mysql.createPool({
 	connectionLimit: 4
 })
 // start the app
-startApp(app, pool)
-
-// client.connect()
-//     .then(() => {
-//         app.listen(PORT, () => {
-//             console.info(`Application started on port ${PORT} at ${new Date()}`)        
-//          })
-//     })
-//     .catch(e => {
-//             console.error('canot connect to mongodb: ', e)
-//     })
-    
+startApp(app, pool)    
 
 // get all countries
 app.get('/countries', async (req, resp) => {
