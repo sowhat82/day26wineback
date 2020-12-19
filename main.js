@@ -28,38 +28,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 //start server
-const startApp = async (app, pool) => {
-	const conn = await pool.getConnection()
-	try {
-		console.info('Pinging database...')
-		await conn.ping()
-
-        client.connect()
-        .then(() => {
-            app.listen(PORT, () => {
-                console.info(`Application started on port ${PORT} at ${new Date()}`)        
-            })
-        })
-        .catch(e => {
-                console.error('cannot connect to mongodb: ', e)
-        })
-    } catch(e) {
-		console.error('Cannot ping database', e)
-	} finally {
-		conn.release()
-	}
-}
-// create connection pool
-const pool = mysql.createPool({
-	host: process.env.DB_HOST || 'localhost',
-	port: parseInt(process.env.DB_PORT) || 3306,
-	database: 'wine',
-	user: process.env.DB_USER || global.env.DB_USER,
-	password: process.env.DB_PASSWORD || global.env.DB_PASSWORD,
-	connectionLimit: 4
+client.connect()
+.then(() => {
+    app.listen(PORT, () => {
+        console.info(`Application started on port ${PORT} at ${new Date()}`)        
+    })
 })
-// start the app
-startApp(app, pool)    
+.catch(e => {
+        console.error('cannot connect to mongodb: ', e)
+})
 
 // get all countries
 app.get('/countries', async (req, resp) => {
